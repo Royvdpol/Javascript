@@ -4,11 +4,13 @@
     padding: 0 4px;
     width: 80%;
     margin: 0 auto;
+    perspective: 600px;
 }
 
-#field>div {
+#field > div {
     padding: 5px;
     position: relative;
+    overflow: hidden;
 }
 
 #selectBoard {
@@ -39,6 +41,19 @@ img {
     width: 100%;
 }
 
+.animal {
+    transform: rotateY(180deg);
+}
+
+.card {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card.is-flipped {
+    transform: rotateY(180deg);
+}
+
 .board4 {
     flex: 25%;
     max-width: 25%;
@@ -64,10 +79,15 @@ img {
     width: calc(100% - 10px);
     height: calc(100% - 10px);
     border: black 1px solid;
+    transform: rotateY(180deg);
 }
+
 .uncovered {
     display: none;
-    border: black 1px solid;
+}
+
+.matched {
+    opacity: 0.3;
 }
 
 img {

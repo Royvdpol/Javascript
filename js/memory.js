@@ -1,6 +1,7 @@
 "use strict";
 let firstClickedCard = "";
 let secondClickedCard = "";
+let score = 0;
 
 let myCardArray;
 const myField = document.getElementById("field");
@@ -97,7 +98,7 @@ function resetTimer() {
 function onSelectBoardSize(e) {
     const selectedBoardSize = parseInt(e.target.value);
     const numberOfCards = Math.floor(selectedBoardSize * selectedBoardSize / 2);
-    const boardClass = 'board' + e.target.value;
+    const boardClass = 'card board' + e.target.value;
     const cardDeck = getShuffledCardDeck(numberOfCards);
     displayMemoryBoard(cardDeck, boardClass);
     resetTimer();
@@ -130,6 +131,7 @@ function getNewCardElement(card, boardClass) {
     newTile.setAttribute("class", boardClass);
     const imageURL = "img/" + card.card1 + ".jpg";
     newCard.setAttribute("src", imageURL);
+    newCard.setAttribute("class", "animal");
     cover.setAttribute("src", "img/membg.jpg");
     cover.setAttribute("class", "covered");
     cover.setAttribute("name", card.card1);
@@ -143,30 +145,28 @@ function getNewCardElement(card, boardClass) {
 function onClickCard(e) {
     if (e.target.className === "covered") {
         e.target.className = "uncovered";
-        let clickedCard = e.target.parentNode.firstChild.getAttribute("name");
-        console.log(clickedCard);
-        matchCards(clickedCard);
+        matchCards(e.target.parentNode);
     }
 }
 
 //Function to check if cards match.
-function matchCards(clickedCard) {
-    let score = 0;
-    if (firstClickedCard === ""){
+function matchCards(clickedParentDiv) {
+    const clickedCard = clickedParentDiv.firstChild.getAttribute("name");
+    if (firstClickedCard === "") {
         firstClickedCard = clickedCard;
+    } else if (secondClickedCard === "") {
+        secondClickedCard = clickedCard;
     }
-    else {
-        if (secondClickedCard === "") {
-            secondClickedCard = clickedCard;
-        }
-    }
+    clickedParentDiv.classList.add("is-flipped");
     if (firstClickedCard === secondClickedCard) {
         console.log("2 gelijke kaartjes");
         score++;
-    } if (firstClickedCard && secondClickedCard && firstClickedCard !== secondClickedCard){
+        correctMatch();
+    }
+    if (firstClickedCard && secondClickedCard && firstClickedCard !== secondClickedCard) {
         pauseGameIncorrect();
-        setTimeout(coverIncorrectMatch, 1500);
-        setTimeout(resumeGame, 3500);
+        setTimeout(coverIncorrectMatch, 1000);
+        setTimeout(resumeGame, 1000);
         console.log("Fout!");
     }
 }
@@ -180,16 +180,28 @@ function resumeGame() {
 }
 
 function coverIncorrectMatch() {
-    const cardOne = document.getElementsByClassName("uncovered");
-    const cardTwo = document.getElementsByClassName("uncovered");
-    cardOne.setAttribute("class", "covered");
-    cardTwo.setAttribute("class", "covered");
-    setTimeout(resetChosenCards, 1500);
+    const uncoveredList = document.querySelectorAll(".uncovered:not(.matched)");
+    Array.from(uncoveredList).forEach((element) => {
+        element.setAttribute("class", "covered");
+    });
+    resetChosenCards();
+}
+
+function correctMatch() {
+    const uncoveredList = document.querySelectorAll(".uncovered:not(.matched)");
+    Array.from(uncoveredList).forEach((element) => {
+        element.parentNode.firstChild.setAttribute("class", "matched");
+        element.remove();
+    });
+    resetChosenCards();
 }
 
 function resetChosenCards() {
     firstClickedCard = "";
     secondClickedCard = "";
+    Array.from(document.querySelectorAll('.is-flipped')).forEach((element) => {
+        element.classList.remove("is-flipped");
+    });
 }
 
 function shuffle(array) {
