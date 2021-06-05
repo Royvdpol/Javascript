@@ -46,7 +46,8 @@ function displayUsername() {
 }
 
 function displayTries() {
-    document.getElementById("tries").innerHTML = 'Aantal pogingen: ' + tries;
+    document.getElementById("tries").innerHTML = 'Aantal pogingen: ' + tries +
+        '. Aantal succesvolle pogingen: ' + score;
 }
 
 let hr = 0;
@@ -180,12 +181,12 @@ function matchCards(clickedParentDiv) {
         score++;
         pauseGame();
         setTimeout(correctMatch, 1000);
-        setTimeout(resumeGame, 1000);
+        setTimeout(resumeGame, 1500);
     }
     if (firstClickedCard && secondClickedCard && firstClickedCard !== secondClickedCard) {
         pauseGame();
         setTimeout(coverIncorrectMatch, 1000);
-        setTimeout(resumeGame, 1000);
+        setTimeout(resumeGame, 1500);
         console.log("Fout!");
     }
 }
