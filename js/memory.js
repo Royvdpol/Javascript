@@ -32,7 +32,7 @@ class Card {
 function getUsername() {
     let username = prompt('Wat is uw naam?');
     if (!username) {
-        username = "Pieter Post";
+        username = "NoName";
     }
     localStorage.setItem("username", username);
     return username;
@@ -210,7 +210,7 @@ function resumeGame() {
     myField.addEventListener("click", onClickCard);
     tries++;
     displayTries();
-    if (score === 1) {
+    if (score === 8) {
         console.log("Uitgespeeld");
         endGame();
     }
@@ -225,7 +225,9 @@ function endGame() {
         highscore = score + (elapsedTime / 10);
     }
     alert("Gewonnen! Jouw highscore is " + highscore + ". Hoe lager hoe beter " + localStorage.getItem("username"));
-    if (highscore < localStorage.getItem("highscore")) {
+    if (localStorage.getItem("highscore") && highscore < localStorage.getItem("highscore")) {
+        localStorage.setItem("highscore", highscore);
+    } else {
         localStorage.setItem("highscore", highscore);
     }
     const r = confirm("Wil je nog een keer spelen?");
