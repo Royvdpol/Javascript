@@ -32,7 +32,7 @@ class Card {
 function getUsername() {
     let username = prompt('Wat is uw naam?');
     if (!username) {
-        username = "onbekende ;-)";
+        username = "Pieter Post";
     }
     localStorage.setItem("username", username);
     return username;
@@ -50,54 +50,63 @@ function displayTries() {
         '. Aantal succesvolle pogingen: ' + score;
 }
 
-let hr = 0;
-let min = 0;
-let sec = 0;
-let stoptime = true;
-
-function startTimer() {
-    if (stoptime === true) {
-        stoptime = false;
-        timerCycle();
+function displayHighscore() {
+    if (localStorage.getItem("highscore")) {
+        document.getElementById("highscore").innerHTML =
+            "De laagste score is: " + localStorage.getItem("highscore") + ".";
     }
 }
 
-function timerCycle() {
-    if (stoptime === false) {
-        sec = parseInt(sec);
-        min = parseInt(min);
-        hr = parseInt(hr);
+function timeToString(time) {
+    let diffInHrs = time / 3600000;
+    let hh = Math.floor(diffInHrs);
 
-        sec = sec + 1;
+    let diffInMin = (diffInHrs - hh) * 60;
+    let mm = Math.floor(diffInMin);
 
-        if (sec === 60) {
-            min = min + 1;
-            sec = 0;
-        }
-        if (min === 60) {
-            hr = hr + 1;
-            min = 0;
-            sec = 0;
-        }
-        if (sec < 10 || sec === 0) {
-            sec = '0' + sec;
-        }
-        if (min < 10 || min === 0) {
-            min = '0' + min;
-        }
-        if (hr < 10 || hr === 0) {
-            hr = '0' + hr;
-        }
-        document.getElementById('timer').innerHTML = hr + ':' + min + ':' + sec;
-        setTimeout("timerCycle()", 1000);
-    }
+    let diffInSec = (diffInMin - mm) * 60;
+    let ss = Math.floor(diffInSec);
+
+    let diffInMs = (diffInSec - ss) * 100;
+    let ms = Math.floor(diffInMs);
+
+    let formattedMM = mm.toString().padStart(2, "0");
+    let formattedSS = ss.toString().padStart(2, "0");
+    let formattedMS = ms.toString().padStart(2, "0");
+
+    return `${formattedMM}:${formattedSS}:${formattedMS}`;
 }
 
-function resetTimer() {
-    sec = 0;
-    min = 0;
-    hr = 0;
-    document.getElementById('timer').innerHTML = '00:00:00';
+// Declare variables to use in our functions below
+
+let startTime;
+let elapsedTime = 0;
+let timerInterval;
+
+// Create function to modify innerHTML
+
+function displayTimer(txt) {
+    document.getElementById("timer").innerHTML = txt;
+}
+
+// Create "start", "pause" and "reset" functions
+
+function start() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(function printTime() {
+        elapsedTime = Date.now() - startTime;
+        displayTimer(timeToString(elapsedTime));
+    }, 10);
+}
+
+function pause() {
+    clearInterval(timerInterval);
+}
+
+function reset() {
+    clearInterval(timerInterval);
+    displayTimer("00:00:00");
+    elapsedTime = 0;
 }
 
 function resetTries() {
@@ -111,11 +120,12 @@ function onSelectBoardSize(e) {
     const boardClass = 'card board' + e.target.value;
     const cardDeck = getShuffledCardDeck(numberOfCards);
     displayMemoryBoard(cardDeck, boardClass);
-    resetTimer();
-    startTimer();
+    reset();
+    start()
     displayUsername();
     resetTries();
     displayTries();
+    displayHighscore();
 }
 
 function getShuffledCardDeck(numberOfCards) {
@@ -193,12 +203,37 @@ function matchCards(clickedParentDiv) {
 
 function pauseGame() {
     myField.removeEventListener("click", onClickCard);
+
 }
 
 function resumeGame() {
     myField.addEventListener("click", onClickCard);
     tries++;
     displayTries();
+    if (score === 1) {
+        console.log("Uitgespeeld");
+        endGame();
+    }
+}
+
+function endGame() {
+    pause();
+    let highscore;
+    if (score === tries) {
+        highscore = (score - 500) + (elapsedTime / 10);
+    } else {
+        highscore = score + (elapsedTime / 10);
+    }
+    alert("Gewonnen! Jouw highscore is " + highscore + ". Hoe lager hoe beter " + localStorage.getItem("username"));
+    if (highscore < localStorage.getItem("highscore")) {
+        localStorage.setItem("highscore", highscore);
+    }
+    const r = confirm("Wil je nog een keer spelen?");
+    if (r === true) {
+        location.reload();
+    } else {
+        alert("Bedankt voor het spelen " + localStorage.getItem("username") + ". Wil je toch weer spelen, ververs dan de pagina.");
+    }
 }
 
 function coverIncorrectMatch() {
@@ -215,6 +250,7 @@ function correctMatch() {
         element.parentNode.firstChild.setAttribute("class", "matched");
         element.remove();
     });
+
     resetChosenCards();
 }
 

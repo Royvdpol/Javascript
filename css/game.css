@@ -49,6 +49,14 @@
     margin: 5px auto;
 }
 
+#highscore {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    width: 50%;
+    margin: 5px auto;
+}
+
 img {
     width: 100%;
 }
