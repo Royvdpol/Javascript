@@ -16,17 +16,29 @@
 #selectBoard {
     display: flex;
     flex-wrap: wrap;
-    padding: 5px;
     width: 50%;
-    margin: 30px auto;
+    margin: 5px auto;
+}
+
+#boardLabel {
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+    margin: 5px auto;
 }
 
 #info {
     display: flex;
     flex-wrap: wrap;
-    padding: 5px;
     width: 50%;
-    margin: 30px auto;
+    margin: 5px auto;
+}
+
+#tries {
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+    margin: 5px auto;
 }
 
 #timer {
@@ -34,7 +46,7 @@
     flex-wrap: wrap;
     padding: 5px;
     width: 50%;
-    margin: 30px auto;
+    margin: 5px auto;
 }
 
 img {
