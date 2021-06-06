@@ -54,7 +54,7 @@ function displayTries() {
 function displayHighscore() {
     if (localStorage.getItem("highscore")) {
         document.getElementById("highscore").innerHTML =
-            "De laagste score is: " + localStorage.getItem("highscore") + ".";
+            "De beste highscore is: " + localStorage.getItem("highscore") + " punten in";
     }
 }
 
@@ -218,20 +218,27 @@ function resumeGame() {
     }
 }
 
-function endGame() {
-    pause();
-    let highscore;
+let highscore;
+function verifyHighscore() {
     if (score === tries) {
         highscore = (score - 500) + (elapsedTime / 10);
     } else {
         highscore = score + (elapsedTime / 10);
     }
-    alert("Gewonnen! Jouw highscore is " + highscore + ". Hoe lager hoe beter " + localStorage.getItem("username"));
-    if (localStorage.getItem("highscore") && highscore < localStorage.getItem("highscore")) {
+    if (!localStorage.getItem("highscore") && !localStorage.getItem("time")) {
         localStorage.setItem("highscore", highscore);
+        localStorage.setItem("time", timeToString(elapsedTime));
+        localStorage.setItem("username", localStorage.getItem("username"));
     } else {
         localStorage.setItem("highscore", highscore);
+        localStorage.setItem("time", timeToString(elapsedTime));
     }
+}
+
+function endGame() {
+    pause();
+    alert("Gewonnen! Jouw highscore is " + highscore + " in " + timeToString(elapsedTime) + ".");
+    verifyHighscore();
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
         location.reload();
