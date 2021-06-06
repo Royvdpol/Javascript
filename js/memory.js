@@ -3,6 +3,7 @@ let firstClickedCard = "";
 let secondClickedCard = "";
 let score = 0;
 let tries = 0;
+let maxMatches = 0;
 
 let myCardArray;
 const myField = document.getElementById("field");
@@ -117,6 +118,7 @@ function resetTries() {
 function onSelectBoardSize(e) {
     const selectedBoardSize = parseInt(e.target.value);
     const numberOfCards = Math.floor(selectedBoardSize * selectedBoardSize / 2);
+    maxMatches = Math.floor(selectedBoardSize * selectedBoardSize / 2);
     const boardClass = 'card board' + e.target.value;
     const cardDeck = getShuffledCardDeck(numberOfCards);
     displayMemoryBoard(cardDeck, boardClass);
@@ -210,7 +212,7 @@ function resumeGame() {
     myField.addEventListener("click", onClickCard);
     tries++;
     displayTries();
-    if (score === 8) {
+    if (score === maxMatches) {
         console.log("Uitgespeeld");
         endGame();
     }
