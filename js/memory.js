@@ -131,7 +131,6 @@ function onSelectBoardSize(e) {
 }
 
 function getShuffledCardDeck(numberOfCards) {
-    console.log(myCardArray);
     shuffle(myCardArray);
     const correctCardsArray = myCardArray.slice(0, numberOfCards);
     const myCardSet = correctCardsArray.concat(correctCardsArray);
@@ -189,7 +188,6 @@ function matchCards(clickedParentDiv) {
     }
     clickedParentDiv.classList.add("is-flipped");
     if (firstClickedCard === secondClickedCard) {
-        console.log("2 gelijke kaartjes");
         score++;
         pauseGame();
         setTimeout(correctMatch, 1000);
@@ -199,7 +197,6 @@ function matchCards(clickedParentDiv) {
         pauseGame();
         setTimeout(coverIncorrectMatch, 1000);
         setTimeout(resumeGame, 1500);
-        console.log("Fout!");
     }
 }
 
@@ -213,7 +210,6 @@ function resumeGame() {
     tries++;
     displayTries();
     if (score === maxMatches) {
-        console.log("Uitgespeeld");
         endGame();
     }
 }
