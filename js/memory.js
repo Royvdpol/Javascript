@@ -54,7 +54,7 @@ function displayTries() {
 function displayHighscore() {
     if (localStorage.getItem("highscore")) {
         document.getElementById("highscore").innerHTML =
-            "De beste highscore is: " + localStorage.getItem("highscore") + " punten in";
+            "De beste highscore is: " + localStorage.getItem("highscore") + " punten in " + localStorage.getItem("time", timeToString(elapsedTime) + "door " + localStorage.getItem("username"));
     }
 }
 
@@ -92,7 +92,7 @@ function displayTimer(txt) {
 
 // Create "start", "pause" and "reset" functions
 
-function start() {
+function startTimer() {
     startTime = Date.now() - elapsedTime;
     timerInterval = setInterval(function printTime() {
         elapsedTime = Date.now() - startTime;
@@ -100,11 +100,11 @@ function start() {
     }, 10);
 }
 
-function pause() {
+function pauseTimer() {
     clearInterval(timerInterval);
 }
 
-function reset() {
+function resetTimer() {
     clearInterval(timerInterval);
     displayTimer("00:00:00");
     elapsedTime = 0;
@@ -122,8 +122,8 @@ function onSelectBoardSize(e) {
     const boardClass = 'card board' + e.target.value;
     const cardDeck = getShuffledCardDeck(numberOfCards);
     displayMemoryBoard(cardDeck, boardClass);
-    reset();
-    start()
+    resetTimer();
+    startTimer()
     displayUsername();
     resetTries();
     displayTries();
@@ -225,10 +225,9 @@ function verifyHighscore() {
     } else {
         highscore = score + (elapsedTime / 10);
     }
-    if (!localStorage.getItem("highscore") && !localStorage.getItem("time")) {
+    if (!localStorage.getItem("highscore") && !localStorage.getItem("time") && highscore < localStorage.getItem("highscore") && timeToString(elapsedTime) < localStorage.getItem("time")) {
         localStorage.setItem("highscore", highscore);
         localStorage.setItem("time", timeToString(elapsedTime));
-        localStorage.setItem("username", localStorage.getItem("username"));
     } else {
         localStorage.setItem("highscore", highscore);
         localStorage.setItem("time", timeToString(elapsedTime));
@@ -236,9 +235,9 @@ function verifyHighscore() {
 }
 
 function endGame() {
-    pause();
-    alert("Gewonnen! Jouw highscore is " + highscore + " in " + timeToString(elapsedTime) + ".");
+    pauseTimer();
     verifyHighscore();
+    alert("Gewonnen! Jouw highscore is " + highscore + " in " + timeToString(elapsedTime) + ".");
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
         location.reload();
