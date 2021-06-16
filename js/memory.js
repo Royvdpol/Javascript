@@ -4,15 +4,16 @@ let secondClickedCard = "";
 let score = 0;
 let tries = 0;
 let maxMatches = 0;
-
 let myCardArray;
+
 const myField = document.getElementById("field");
 const mySelect = document.getElementById("selectBoard");
 myField.addEventListener("click", onClickCard);
 mySelect.addEventListener("change", onSelectBoardSize);
 document.addEventListener("DOMContentLoaded", async function () {
     myCardArray = await fetchCards();
-}, getUsername());
+    setUsername(prompt('Voer uw naam in.'));
+});
 
 function fetchCards() {
     return fetch("js/cards.json")
@@ -29,33 +30,65 @@ class Card {
     }
 }
 
-//Function to get username and store it in localStorage.
-function getUsername() {
-    let username = prompt('Wat is uw naam?');
-    if (!username) {
-        username = "NoName";
-    }
+function setUsername(username) {
     localStorage.setItem("username", username);
-    return username;
+}
+
+
+function getUsername() {
+    return localStorage.getItem("username");
 }
 
 function displayUsername() {
-    if (localStorage.getItem("username")) {
-        document.getElementById("info").innerHTML =
-            "Heel veel succes " + localStorage.getItem("username") + "!";
+    document.getElementById("info").innerHTML =
+        "Heel veel succes " + getUsername() + "!";
+}
+
+class Highscore {
+    constructor(user, bestTime, tries) {
+        this.user = user;
+        this.bestTime = bestTime;
+        this.tries = tries;
+    }
+}
+
+function setHighscore() {
+    let highscores = new Highscore(getUsername(), elapsedTime, tries);
+    if (maxMatches === 8) {
+        localStorage.setItem("highscore-4x4", JSON.stringify(highscores));
+    }
+    if (maxMatches === 12) {
+        localStorage.setItem("highscore-5x5", JSON.stringify(highscores));
+    } else {
+        localStorage.setItem("highscore-6x6", JSON.stringify(highscores));
+    }
+}
+
+function getHighscore() {
+    if (maxMatches === 8) {
+        return JSON.parse(localStorage.getItem("highscore-4x4"));
+    }
+    if (maxMatches === 12) {
+        return JSON.parse(localStorage.getItem("highscore-5x5"));
+    } else {
+        return JSON.parse(localStorage.getItem("highscore-6x6"));
+    }
+}
+
+function displayHighscore() {
+    getHighscore();
+    if (getHighscore() === null) {
+        document.getElementById("highscore").innerHTML =
+            "Op dit bord is nog geen highscore!";
+    } else {
+        document.getElementById("highscore").innerHTML =
+            "Highscore is van: " + getHighscore().user + " met " + getHighscore().tries + " pogingen in de tijd: " + timeToString(getHighscore().bestTime) + ".";
     }
 }
 
 function displayTries() {
     document.getElementById("tries").innerHTML = 'Aantal pogingen: ' + tries +
         '. Aantal succesvolle pogingen: ' + score;
-}
-
-function displayHighscore() {
-    if (localStorage.getItem("highscore")) {
-        document.getElementById("highscore").innerHTML =
-            "De beste highscore is: " + localStorage.getItem("highscore") + " punten in " + localStorage.getItem("time", timeToString(elapsedTime) + "door " + localStorage.getItem("username"));
-    }
 }
 
 function timeToString(time) {
@@ -168,15 +201,15 @@ function getNewCardElement(card, boardClass) {
 function onClickCard(e) {
     if (e.target.className === "covered") {
         e.target.className = "uncovered";
-        playAudio('snd/' + e.target.name + '.wav');
+        //playAudio('snd/' + e.target.name + '.wav');
         matchCards(e.target.parentNode);
     }
 }
 
 //Function to play audio when card is clicked.
-function playAudio(url) {
+/*function playAudio(url) {
     new Audio(url).play();
-}
+}*/
 
 //Function to check if cards match.
 function matchCards(clickedParentDiv) {
@@ -209,36 +242,23 @@ function resumeGame() {
     myField.addEventListener("click", onClickCard);
     tries++;
     displayTries();
-    if (score === maxMatches) {
+    /*if (score === maxMatches) {
         endGame();
-    }
-}
-
-let highscore;
-function verifyHighscore() {
-    if (score === tries) {
-        highscore = (score - 500) + (elapsedTime / 10);
-    } else {
-        highscore = score + (elapsedTime / 10);
-    }
-    if (!localStorage.getItem("highscore") && !localStorage.getItem("time") && highscore < localStorage.getItem("highscore") && timeToString(elapsedTime) < localStorage.getItem("time")) {
-        localStorage.setItem("highscore", highscore);
-        localStorage.setItem("time", timeToString(elapsedTime));
-    } else {
-        localStorage.setItem("highscore", highscore);
-        localStorage.setItem("time", timeToString(elapsedTime));
+    }*/
+    if (score === 1) {
+        endGame();
     }
 }
 
 function endGame() {
     pauseTimer();
-    verifyHighscore();
-    alert("Gewonnen! Jouw highscore is " + highscore + " in " + timeToString(elapsedTime) + ".");
+    setHighscore();
+    alert("Gewonnen! Jouw highscore is " + tries + " in " + timeToString(elapsedTime) + ".");
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
         location.reload();
     } else {
-        alert("Bedankt voor het spelen " + localStorage.getItem("username") + ". Wil je toch weer spelen, ververs dan de pagina.");
+        alert("Bedankt voor het spelen " + getUsername() + ". Wil je toch weer spelen, ververs dan de pagina.");
     }
 }
 
@@ -256,7 +276,6 @@ function correctMatch() {
         element.parentNode.firstChild.setAttribute("class", "matched");
         element.remove();
     });
-
     resetChosenCards();
 }
 
