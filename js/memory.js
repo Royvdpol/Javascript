@@ -75,6 +75,13 @@ function getHighscore() {
     }
 }
 
+function verifyHighscore() {
+    getHighscore();
+    if (elapsedTime <= getHighscore().bestTime && tries < getHighscore().tries){
+        setHighscore();
+    }
+}
+
 function displayHighscore() {
     getHighscore();
     if (getHighscore() === null) {
@@ -252,7 +259,7 @@ function resumeGame() {
 
 function endGame() {
     pauseTimer();
-    setHighscore();
+    verifyHighscore();
     alert("Gewonnen! Jouw highscore is " + tries + " in " + timeToString(elapsedTime) + ".");
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
