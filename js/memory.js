@@ -5,6 +5,8 @@ let score = 0;
 let tries = 0;
 let maxMatches = 0;
 let myCardArray;
+let bestNew = "";
+
 
 const myField = document.getElementById("field");
 const mySelect = document.getElementById("selectBoard");
@@ -77,9 +79,11 @@ function getHighscore() {
 
 function verifyHighscore() {
     getHighscore();
-    if (elapsedTime <= getHighscore().bestTime && tries < getHighscore().tries){
+    if (elapsedTime <= getHighscore().bestTime && tries < getHighscore().tries) {
         setHighscore();
+        bestNew = 'Dit is een nieuwe highscore!';
     }
+    bestNew = 'Dit is helaas geen nieuwe highscore!';
 }
 
 function displayHighscore() {
@@ -208,15 +212,15 @@ function getNewCardElement(card, boardClass) {
 function onClickCard(e) {
     if (e.target.className === "covered") {
         e.target.className = "uncovered";
-        //playAudio('snd/' + e.target.name + '.wav');
+        playAudio('snd/' + e.target.name + '.wav');
         matchCards(e.target.parentNode);
     }
 }
 
 //Function to play audio when card is clicked.
-/*function playAudio(url) {
+function playAudio(url) {
     new Audio(url).play();
-}*/
+}
 
 //Function to check if cards match.
 function matchCards(clickedParentDiv) {
@@ -249,10 +253,7 @@ function resumeGame() {
     myField.addEventListener("click", onClickCard);
     tries++;
     displayTries();
-    /*if (score === maxMatches) {
-        endGame();
-    }*/
-    if (score === 1) {
+    if (score === maxMatches) {
         endGame();
     }
 }
@@ -260,7 +261,7 @@ function resumeGame() {
 function endGame() {
     pauseTimer();
     verifyHighscore();
-    alert("Gewonnen! Jouw highscore is " + tries + " in " + timeToString(elapsedTime) + ".");
+    alert("Gewonnen! Jouw score is " + tries + " in " + timeToString(elapsedTime) + ". " + bestNew);
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
         location.reload();
