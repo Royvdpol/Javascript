@@ -260,7 +260,11 @@ function resumeGame() {
 
 function endGame() {
     pauseTimer();
-    verifyHighscore();
+    if (getHighscore() === null) {
+        setHighscore();
+    } else {
+        verifyHighscore();
+    }
     alert("Gewonnen! Jouw score is " + tries + " in " + timeToString(elapsedTime) + ". " + bestNew);
     const r = confirm("Wil je nog een keer spelen?");
     if (r === true) {
